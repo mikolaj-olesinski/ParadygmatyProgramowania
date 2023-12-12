@@ -8,3 +8,16 @@ def modifiedPascalF(n: Int): List[Int] = {
 
 }
 
+
+modifiedPascalF(1)
+modifiedPascalF(2)
+modifiedPascalF(3)
+modifiedPascalF(4)
+modifiedPascalF(5)
+modifiedPascalF(6)
+modifiedPascalF(7)
+
+
+modifiedPascalF(-1)
+
+
