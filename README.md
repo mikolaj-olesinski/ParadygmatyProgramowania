@@ -1,2 +1,3 @@
 # ParadygmatyProgramowania
 # ParadygmatyProgramowania
+# ParadygmatyProgramowania
