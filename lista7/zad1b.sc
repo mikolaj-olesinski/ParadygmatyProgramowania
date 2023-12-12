@@ -1,14 +1,17 @@
 def modifiedPascalI(n: Int): Array[Int] = {
+  if n < 0 then throw new IllegalArgumentException("n < 0")
   val pascal = new Array[Int](n + 1)
+  pascal(0) = 1
 
-  for (i <- 0 to n) {
-    pascal(0) = 1
+  for (i <- 1 to n) {
+    var prev = 1
+    
     for (j <- 1 until i) {
-      if (i % 2 == 0) {
-        pascal(j) = pascal(j) - pascal(j - 1)
-      } else {
-        pascal(j) = pascal(j) + pascal(j - 1)
-      }
+      val current = pascal(j)
+      if i % 2 == 0 then pascal(j) = prev + current
+      else pascal(j) = prev - current
+      
+      prev = current
     }
     pascal(i) = 1
   }
@@ -16,4 +19,11 @@ def modifiedPascalI(n: Int): Array[Int] = {
   pascal
 }
 
+
+modifiedPascalI(0)
+modifiedPascalI(1)
+modifiedPascalI(2)
+modifiedPascalI(3)
+modifiedPascalI(4)
 modifiedPascalI(5)
+modifiedPascalI(6)
