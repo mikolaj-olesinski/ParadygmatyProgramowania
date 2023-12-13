@@ -78,3 +78,4 @@ let d = treeFoldL (fun acc value -> acc ^ string_of_int value) "" exampleTree4;;
 
 let e = treeFoldL (fun acc value -> acc ^ string_of_int value) "" exampleTree5;
 
+
