@@ -4,7 +4,7 @@ let modifiedPascalI n =
     let pascal = Array.make (n + 1) 0 in
     pascal.(0) <- 1;
     for i = 1 to n do
-      let prev = ref 1 in
+      let prev = ref pascal.(0) in
       for j = 1 to i - 1 do
         let current = pascal.(j) in
         if i mod 2 = 0 then pascal.(j) <- !prev + current
@@ -14,3 +14,13 @@ let modifiedPascalI n =
       pascal.(i) <- 1;
     done;
     pascal;;
+
+
+modifiedPascalI 0;;
+modifiedPascalI 1;;
+modifiedPascalI 2;;
+modifiedPascalI 3;;
+modifiedPascalI 4;;
+modifiedPascalI 5;;
+modifiedPascalI 6;;
+modifiedPascalI 7;;
