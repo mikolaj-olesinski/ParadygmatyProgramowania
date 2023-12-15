@@ -4,7 +4,7 @@ def modifiedPascalI(n: Int): Array[Int] = {
   pascal(0) = 1
 
   for (i <- 1 to n) {
-    var prev = 1
+    var prev = pascal(0)
     
     for (j <- 1 until i) {
       val current = pascal(j)

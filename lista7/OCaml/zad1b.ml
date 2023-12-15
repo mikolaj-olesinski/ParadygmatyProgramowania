@@ -5,10 +5,12 @@ let modifiedPascalI n =
 
     for i = 1 to n do
       let prev = ref pascal.(0) in
+
       for j = 1 to i - 1
         let current = pascal.(j) in
         if i mod 2 = 0 then pascal.(j) <- !prev + current
         else pascal.(j) <- !prev - current;
+
         prev := current;
       done;
     done;
