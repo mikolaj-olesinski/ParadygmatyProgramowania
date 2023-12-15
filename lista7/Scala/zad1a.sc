@@ -1,19 +1,19 @@
 def modifiedPascalF(n: Int): List[Int] = {
-      if (n < 0) throw new IllegalArgumentException("n < 0")
-      else if (n == 0) List(1)
-      else {
-            val prev = modifiedPascalF(n - 1)
+  if (n < 0) throw new IllegalArgumentException("n < 0")
+  else if (n == 0) List(1)
+  else {
+    val prev = modifiedPascalF(n - 1)
 
-            def help(list: List[Int], n :Int): List[Int] = {
-                  list match {
-                        case Nil => Nil
-                        case x :: Nil => List(1)
-                        case x :: xs => if n % 2 == 0 then x + xs.head :: help(xs, n) else x - xs.head :: help(xs, n)
-                  }
-            }
-
-            1 :: help(prev, n)
+    def help(list: List[Int], n :Int): List[Int] = {
+      list match {
+        case x :: Nil => List(1)
+        case x :: xs => if n % 2 == 0 then x + xs.head :: help(xs, n) else x - xs.head :: help(xs, n)
+        case _ => Nil
       }
+    }
+
+    1 :: help(prev, n)
+    }
 }
 
 modifiedPascalF(0)
