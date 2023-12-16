@@ -2,7 +2,7 @@ let rec cutOut list a b =
   let rec cutOutAfterConditions list a b =
     match (a, b) with
     | (0, -1) -> []
-    | (0, _) -> List.hd list :: cutOut (List.tl list) 0 (b - 1)
+    | (0, h::t) -> h :: cutOut (t) 0 (b - 1)
     | (_) -> cutOut (List.tl list) (a - 1) (b - 1)
   in
 
