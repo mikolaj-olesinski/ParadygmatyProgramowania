@@ -16,41 +16,42 @@ struct
   let dump mem = Array.to_list mem
 end
 
-
 module RamMachine (MemoryModule : MEMORY) =
 struct
-  type instruction = Load of int*int | Add of int*int*int | Sub of int*int*int
-  type machine = { memory: MemoryModule.memory; instructions: instruction list }
+  type instruction = Load of int * int | Add of int * int * int | Sub of int * int * int
+  type machine = { memory: MemoryModule.memory; mutable instructions: instruction list }
 
   let init size instructions =
-    { memory = MemoryModule.init size; instructions }
+    { memory = MemoryModule.init size; instructions = instructions }
 
-  let rec step machine =
+  let step machine =
     match machine.instructions with
-    | [] -> None
+    | [] -> ()
     | instruction :: rest ->
         match instruction with
-        | Load (d, v) ->
-            MemoryModule.set machine.memory d (Some v);
-            Some { machine with instructions = rest }
-        | Add (d, a1, a2) ->
-            let v1 = MemoryModule.get machine.memory a1 in
-            let v2 = MemoryModule.get machine.memory a2 in
-            (match (v1, v2) with
-             | (Some x, Some y) ->
-                 MemoryModule.set machine.memory d (Some (x + y));
-                 Some { machine with instructions = rest }
-             | _ -> None)
-        | Sub (d, a1, a2) ->
-            let v1 = MemoryModule.get machine.memory a1 in
-            let v2 = MemoryModule.get machine.memory a2 in
-            (match (v1, v2) with
-             | (Some x, Some y) ->
-                 MemoryModule.set machine.memory d (Some (x - y));
-                 Some { machine with instructions = rest }
-             | _ -> None)
-
-
+        | Load (index, value) ->
+            MemoryModule.set machine.memory index (Some value);
+            machine.instructions <- rest
+        | Add (index, x, y) ->
+            (match (MemoryModule.get machine.memory x, MemoryModule.get machine.memory y) with
+             | (val1, val2) ->
+                 (match (val1, val2) with
+                  | (Some v1, Some v2) ->
+                      MemoryModule.set machine.memory index (Some (v1 + v2));
+                      machine.instructions <- rest
+                  | _ -> ()
+                 )
+            )
+        | Sub (index, x, y) ->
+            (match (MemoryModule.get machine.memory x, MemoryModule.get machine.memory y) with
+             | (val1, val2) ->
+                 (match (val1, val2) with
+                  | (Some v1, Some v2) ->
+                      MemoryModule.set machine.memory index (Some (v1 - v2));
+                      machine.instructions <- rest
+                  | _ -> ()
+                 )
+            )
 
   let dump machine = MemoryModule.dump machine.memory;
 end;;
