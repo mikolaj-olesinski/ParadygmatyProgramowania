@@ -16,7 +16,7 @@ struct
   let dump mem = Array.to_list mem
 end
 
-module RamMachine (MemoryModule : MEMORY) =
+module RamMachine  = functor (MemoryModule : MEMORY) ->
 struct
   type instruction = Load of int * int | Add of int * int * int | Sub of int * int * int
   type machine = { memory: MemoryModule.memory; mutable instructions: instruction list }
