@@ -57,7 +57,12 @@ struct
 end;;
 
 module MyRamMachine = RamMachine(ArrayMemory);;
-let initial_machine = MyRamMachine.init 10 [Load(1, 7); Load(2, 3)];;
+let initial_machine = MyRamMachine.init 10 [Load(1, 7); Load(2, 3); Add(3, 1, 2); Sub(4, 1, 2)];;
+MyRamMachine.dump initial_machine;;
+MyRamMachine.step initial_machine;;
+MyRamMachine.dump initial_machine;;
+MyRamMachine.step initial_machine;;
+MyRamMachine.dump initial_machine;;
 MyRamMachine.step initial_machine;;
 MyRamMachine.dump initial_machine;;
 MyRamMachine.step initial_machine;;
