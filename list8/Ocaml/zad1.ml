@@ -16,6 +16,22 @@ struct
   let dump mem = Array.to_list mem
 end
 
+module ListMemory : MEMORY_LIST =
+struct
+  type memory = (int option) list ref
+  let init n = ref (List.init n (fun _ -> None))
+  let get mem index = List.nth !mem index
+  let set mem index value =
+    let rec update_list lst i v acc =
+      match lst with
+      | [] -> List.rev acc
+      | hd :: tl when i = 0 -> List.rev_append acc (v :: tl)
+      | hd :: tl -> update_list tl (i - 1) v (hd :: acc)
+    in
+    mem := update_list !mem index value [];
+  let dump mem = !mem
+end;;
+
 module RamMachine  = functor (MemoryModule : MEMORY) ->
 struct
   type instruction = Load of int * int | Add of int * int * int | Sub of int * int * int
