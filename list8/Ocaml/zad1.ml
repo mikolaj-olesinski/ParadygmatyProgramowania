@@ -5,7 +5,7 @@ sig
   val get : memory -> int -> int option
   val set : memory -> int -> int option -> unit
   val dump : memory -> int option list
-end;;
+end
 
 module ArrayMemory : MEMORY =
 struct
@@ -16,21 +16,25 @@ struct
   let dump mem = Array.to_list mem
 end
 
-module ListMemory : MEMORY_LIST =
+module ListMemory : MEMORY =
 struct
   type memory = (int option) list ref
   let init n = ref (List.init n (fun _ -> None))
   let get mem index = List.nth !mem index
   let set mem index value =
-    let rec update_list lst i v acc =
-      match lst with
-      | [] -> List.rev acc
-      | hd :: tl when i = 0 -> List.rev_append acc (v :: tl)
-      | hd :: tl -> update_list tl (i - 1) v (hd :: acc)
-    in
-    mem := update_list !mem index value [];
+    begin
+      let rec update_list lst i v acc =
+        match lst with
+        | [] -> List.rev acc
+        | hd :: tl when i = 0 -> List.rev_append acc (v :: tl)
+        | hd :: tl -> update_list tl (i - 1) v (hd :: acc)
+      in
+      mem := update_list !mem index value [];
+    end
+
   let dump mem = !mem
-end;;
+end
+
 
 module RamMachine  = functor (MemoryModule : MEMORY) ->
 struct
@@ -85,7 +89,7 @@ MyRamMachine.step initial_machine;;
 MyRamMachine.dump initial_machine;;
 
 module MyRamMachineList = RamMachine(ListMemory);;
-let initial_machine_list = MyRamMachine.init 10 [Load(1, 7); Load(2, 3); Add(3, 1, 2); Sub(4, 1, 2)];;
+let initial_machine_list = MyRamMachineList.init 10 [Load(1, 7); Load(2, 3); Add(3, 1, 2); Sub(4, 1, 2)];;
 MyRamMachineList.dump initial_machine_list;;
 MyRamMachineList.step initial_machine_list;;
 MyRamMachineList.dump initial_machine_list;;
