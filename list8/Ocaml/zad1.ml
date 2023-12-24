@@ -83,3 +83,16 @@ MyRamMachine.step initial_machine;;
 MyRamMachine.dump initial_machine;;
 MyRamMachine.step initial_machine;;
 MyRamMachine.dump initial_machine;;
+
+module MyRamMachineList = RamMachine(ListMemory);;
+let initial_machine_list = MyRamMachine.init 10 [Load(1, 7); Load(2, 3); Add(3, 1, 2); Sub(4, 1, 2)];;
+MyRamMachineList.dump initial_machine_list;;
+MyRamMachineList.step initial_machine_list;;
+MyRamMachineList.dump initial_machine_list;;
+MyRamMachineList.step initial_machine_list;;
+MyRamMachineList.dump initial_machine_list;;
+MyRamMachineList.step initial_machine_list;;
+MyRamMachineList.dump initial_machine_list;;
+MyRamMachineList.step initial_machine_list;;
+MyRamMachineList.dump initial_machine_list;;
+
