@@ -11,29 +11,45 @@ module ArrayMemory : MEMORY =
 struct
   type memory = int option array
   let init n = Array.make n None
-  let get mem index = mem.(index)
-  let set mem index value = mem.(index) <- value
+  let get mem index =
+    if index < 0 then mem.(0)
+    else mem.(index)
+
+  let set mem index value =
+    if index < 0 then mem.(0) <- value
+    else mem.(index) <- value
+
   let dump mem = Array.to_list mem
-end
+end;;
+
 
 module ListMemory : MEMORY =
 struct
-  type memory = (int option) list ref
+  type memory = int option list ref
   let init n = ref (List.init n (fun _ -> None))
-  let get mem index = List.nth !mem index
-  let set mem index value =
-    begin
-      let rec update_list lst i v acc =
-        match lst with
-        | [] -> List.rev acc
-        | hd :: tl when i = 0 -> List.rev_append acc (v :: tl)
-        | hd :: tl -> update_list tl (i - 1) v (hd :: acc)
-      in
-      mem := update_list !mem index value [];
-    end
+
+  let rec get mem index =
+    if index < 0 then get mem 0
+    else
+      match !mem with
+      | [] -> None
+      | x :: xs -> if index = 0 then x else get (ref xs) (index - 1)
+
+  let rec set mem index value =
+    let rec aux current_index lst =
+      match lst with
+      | [] -> []
+      | x :: xs ->
+          if current_index = index then
+            value :: xs
+          else
+            x :: aux (current_index + 1) xs
+    in
+    if index < 0 then set mem 0 value
+    else mem := aux 0 !mem
 
   let dump mem = !mem
-end
+end ;;
 
 
 module RamMachine  = functor (MemoryModule : MEMORY) ->
@@ -76,6 +92,7 @@ struct
   let dump machine = MemoryModule.dump machine.memory;
 end;;
 
+(*
 module MyRamMachine = RamMachine(ArrayMemory);;
 let initial_machine = MyRamMachine.init 10 [Load(1, 7); Load(2, 3); Add(3, 1, 2); Sub(4, 1, 2)];;
 MyRamMachine.dump initial_machine;;
@@ -87,9 +104,10 @@ MyRamMachine.step initial_machine;;
 MyRamMachine.dump initial_machine;;
 MyRamMachine.step initial_machine;;
 MyRamMachine.dump initial_machine;;
+*)
 
 module MyRamMachineList = RamMachine(ListMemory);;
-let initial_machine_list = MyRamMachineList.init 10 [Load(1, 7); Load(2, 3); Add(3, 1, 2); Sub(4, 1, 2)];;
+let initial_machine_list = MyRamMachineList.init 10 [Load(1, 7); Load(2, 3); Add(3, 1, 2); Sub(4, 1, 2);];;
 MyRamMachineList.dump initial_machine_list;;
 MyRamMachineList.step initial_machine_list;;
 MyRamMachineList.dump initial_machine_list;;
