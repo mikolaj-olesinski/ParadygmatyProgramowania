@@ -10,7 +10,9 @@ end
 module ArrayMemory : MEMORY =
 struct
   type memory = int option array
+
   let init n = Array.make n None
+
   let get mem index =
     if index < 0 then mem.(0)
     else mem.(index)
@@ -25,31 +27,26 @@ end;;
 
 module ListMemory : MEMORY =
 struct
-  type memory = int option list ref
-  let init n = ref (List.init n (fun _ -> None))
+  type memory = (int option ref) list ref
+  let init n = ref (List.init n (fun _ -> ref None))
 
   let rec get mem index =
     if index < 0 then get mem 0
     else
       match !mem with
-      | [] -> None
-      | x :: xs -> if index = 0 then x else get (ref xs) (index - 1)
+      | [] -> raise (Invalid_argument "Index out of bounds")
+      | x :: xs -> if index = 0 then !x else get (ref xs) (index - 1)
 
   let rec set mem index value =
-    let rec aux current_index lst =
-      match lst with
-      | [] -> []
-      | x :: xs ->
-          if current_index = index then
-            value :: xs
-          else
-            x :: aux (current_index + 1) xs
-    in
-    if index < 0 then set mem 0 value
-    else mem := aux 0 !mem
+    match !mem with
+    | [] -> raise (Invalid_argument "Index out of bounds")
+    | x :: xs ->
+        if index = 0 then x := value
+        else set (ref xs) (index - 1) value
 
-  let dump mem = !mem
+  let dump mem = List.map (!) !mem
 end ;;
+
 
 
 module RamMachine  = functor (MemoryModule : MEMORY) ->
@@ -70,31 +67,26 @@ struct
             machine.instructions <- rest
         | Add (index, x, y) ->
             (match (MemoryModule.get machine.memory x, MemoryModule.get machine.memory y) with
-             | (val1, val2) ->
-                 (match (val1, val2) with
-                  | (Some v1, Some v2) ->
-                      MemoryModule.set machine.memory index (Some (v1 + v2));
-                      machine.instructions <- rest
-                  | _ -> ()
-                 )
-            )
+             | (Some val1, Some val2) ->
+                 MemoryModule.set machine.memory index (Some (val1 + val2));
+             | _ -> ()
+            );
+            machine.instructions <- rest
         | Sub (index, x, y) ->
             (match (MemoryModule.get machine.memory x, MemoryModule.get machine.memory y) with
-             | (val1, val2) ->
-                 (match (val1, val2) with
-                  | (Some v1, Some v2) ->
-                      MemoryModule.set machine.memory index (Some (v1 - v2));
-                      machine.instructions <- rest
-                  | _ -> ()
-                 )
-            )
+             | (Some val1, Some val2) ->
+                 MemoryModule.set machine.memory index (Some (val1 - val2));
+             | _ -> ()
+            );
+            machine.instructions <- rest
+
 
   let dump machine = MemoryModule.dump machine.memory;
 end;;
 
-(*
+
 module MyRamMachine = RamMachine(ArrayMemory);;
-let initial_machine = MyRamMachine.init 10 [Load(1, 7); Load(2, 3); Add(3, 1, 2); Sub(4, 1, 2)];;
+let initial_machine = MyRamMachine.init 10 [Load(1, 7); Load(2, 3); Add(3, 1, 2); Sub(4, 1, 2);Add(3, 4, 4);Add(100,100,100);];;
 MyRamMachine.dump initial_machine;;
 MyRamMachine.step initial_machine;;
 MyRamMachine.dump initial_machine;;
@@ -104,10 +96,18 @@ MyRamMachine.step initial_machine;;
 MyRamMachine.dump initial_machine;;
 MyRamMachine.step initial_machine;;
 MyRamMachine.dump initial_machine;;
-*)
+MyRamMachine.step initial_machine;;
+MyRamMachine.dump initial_machine;;
+MyRamMachine.step initial_machine;;
+MyRamMachine.dump initial_machine;;
+
 
 module MyRamMachineList = RamMachine(ListMemory);;
-let initial_machine_list = MyRamMachineList.init 10 [Load(1, 7); Load(2, 3); Add(3, 1, 2); Sub(4, 1, 2);];;
+let initial_machine_list = MyRamMachineList.init 10 [Load(1, 7); Load(2, 3); Add(3, 1, 2); Sub(4, 1, 2);Add(3, 4, 4);Add(100,100,100);];;
+MyRamMachineList.dump initial_machine_list;;
+MyRamMachineList.step initial_machine_list;;
+MyRamMachineList.dump initial_machine_list;;
+MyRamMachineList.step initial_machine_list;;
 MyRamMachineList.dump initial_machine_list;;
 MyRamMachineList.step initial_machine_list;;
 MyRamMachineList.dump initial_machine_list;;
