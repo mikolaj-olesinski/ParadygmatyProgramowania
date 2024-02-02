@@ -7,16 +7,16 @@ trait User[+Read <: Low, +Write <: Low]:
 
 class Terminal[Read <: Low, Write <: Read] (private var secretMessage : String):
   def read(user : User[Read, _]): String = secretMessage
-  def write(user : User[_, Write], message : String): Unit = secretMessage = message
-
+  def write(user : User[_, Write]) : Unit = secretMessage = user.secret
 
 class HighUser(val secret: String) extends User[High, High]
 class SuperUser(val secret: String) extends User[Super, Super]
+class LowUser(val secret: String) extends User[Low, Low]
 
 val highUser = HighUser("highSecretMessage")
 val superUser = SuperUser("superSecretMessage")
 
-val terminal = Terminal[High, High]("initialSecretMessage")
-val superTerminal = Terminal[Super, Super]("initialSecretMessage")
+val terminal = Terminal[Super, Super]("initialSecretMessage")
 
-terminal.write(highUser, "newSecretMessage")
+terminal.write(superUser)
+terminal.read(superUser)
